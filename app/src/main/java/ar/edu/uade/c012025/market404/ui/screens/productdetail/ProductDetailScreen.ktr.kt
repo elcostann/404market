@@ -1,14 +1,11 @@
 package ar.edu.uade.c012025.market404.ui.screens.productdetail
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -19,19 +16,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
-import ar.edu.uade.c012025.market404.R
-import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
+import kotlin.math.roundToInt
+import ar.edu.uade.c012025.market404.Data.Product
+import ar.edu.uade.c012025.market404.ui.theme.Primary
 
 @Composable
-fun ProductDetailScreen(productId: Int, navController: NavController? = null) {
+fun ProductDetailScreen(
+    productId: Int,
+    navController: NavController? = null
+) {
     var product by remember { mutableStateOf<Product?>(null) }
 
     LaunchedEffect(productId) {
@@ -42,7 +41,7 @@ fun ProductDetailScreen(productId: Int, navController: NavController? = null) {
         }
     }
 
-    product?.let {
+    product?.let { it ->
         val scrollState = rememberScrollState()
 
         Column(
@@ -51,7 +50,7 @@ fun ProductDetailScreen(productId: Int, navController: NavController? = null) {
                 .verticalScroll(scrollState)
                 .padding(16.dp)
         ) {
-            // Header
+            // header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -66,48 +65,71 @@ fun ProductDetailScreen(productId: Int, navController: NavController? = null) {
                         contentDescription = null,
                         tint = Primary
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(Modifier.width(4.dp))
                     Text("404 Market", fontWeight = FontWeight.Bold)
                 }
                 Row {
-                    IconButton(onClick = { }) { Icon(Icons.Default.Search, contentDescription = null) }
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFFFBBF24))
+                    IconButton(onClick = { /* buscar */ }) {
+                        Icon(Icons.Default.Search, contentDescription = "Buscar")
                     }
-                    IconButton(onClick = { }) { Icon(Icons.Default.ShoppingCart, contentDescription = null) }
+                    IconButton(onClick = { /* favorito */ }) {
+                        Icon(
+                            Icons.Default.Favorite,
+                            contentDescription = "Favorito",
+                            tint = Color(0xFFFBBF24)
+                        )
+                    }
+                    IconButton(onClick = { /* carrito */ }) {
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito")
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Imagen
+            // imagen
             Image(
                 painter = rememberAsyncImagePainter(it.image),
                 contentDescription = it.title,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp)
+                    .height(280.dp),
+                contentScale = ContentScale.Fit
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Título y precio
-            Text(text = it.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "$${it.price}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFFF97316))
-            Spacer(modifier = Modifier.height(8.dp))
+            // titulo y precio
+            Text(it.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "$${it.price}",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Primary
+            )
 
-            // Estrellas + reviews
+            Spacer(Modifier.height(12.dp))
+
+            // Rating dinámico
             Row(verticalAlignment = Alignment.CenterVertically) {
-                repeat(4) {
-                    Text("★", fontSize = 20.sp, color = Color(0xFFFFC107))
+                val fullStars = it.rating.rate.roundToInt()
+                repeat(fullStars) {
+                    Text("★", fontSize = 18.sp, color = Color(0xFFFFC107))
                 }
-                Text("☆", fontSize = 20.sp, color = Color(0xFF212121))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("120 reviews", fontWeight = FontWeight.SemiBold)
+                // si hay .5 o más, mostramos media estrella
+                if (it.rating.rate - fullStars >= 0.5) {
+                    Text("⯪", fontSize = 18.sp, color = Color(0xFFFFC107)) // Unicode de media estrella
+                }
+                val emptyStars = 5 - fullStars - if (it.rating.rate - fullStars >= 0.5) 1 else 0
+                repeat(emptyStars) {
+                    Text("☆", fontSize = 18.sp, color = Color(0xFFB0BEC5))
+                }
+                Spacer(Modifier.width(8.dp))
+                Text("(${it.rating.count} reviews)", style = MaterialTheme.typography.bodySmall)
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
             // Descripción
             Text(
@@ -116,34 +138,35 @@ fun ProductDetailScreen(productId: Int, navController: NavController? = null) {
                 color = Color.DarkGray
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
 
-            // Botones
+            // botones
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(
-                    onClick = { },
+                    onClick = { /* agregar al carrito */ },
                     shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFBBF24)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("+  Agregar al Carrito")
                 }
                 Button(
-                    onClick = { },
+                    onClick = { /* agregar a favorito */ },
                     shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFBBF24)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary),
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("+  Agregar a Favorito")
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp)) // margen inferior
+            Spacer(Modifier.height(32.dp))
         }
     } ?: run {
+        // carga
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -152,6 +175,4 @@ fun ProductDetailScreen(productId: Int, navController: NavController? = null) {
         }
     }
 }
-
-
 

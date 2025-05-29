@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
 }
 
 android {
@@ -52,37 +53,43 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.play.services.analytics.impl)
-    implementation(libs.retrofit)
+    implementation(libs.gson)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.converter.gson)
+    implementation(libs.retrofit)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.google.services)
+    implementation(libs.firebase.bom)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.compiler) {
+        exclude(group = "com.intellij", module="annotations")
+    }
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.migration)
+    implementation(libs.androidx.room.runtime)
+    {
+        exclude(group = "com.intellij", module="annotations")
+    }
+    implementation(libs.androidx.room.migration)
+    implementation(libs.gson)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)// --- Jetpack Compose ---
-    implementation("androidx.activity:activity-compose:1.8.0")
-    implementation("androidx.compose.ui:ui:1.5.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
-    implementation("androidx.compose.material3:material3:1.1.2")
-    implementation("androidx.navigation:navigation-compose:2.7.3")
-    implementation("androidx.compose.foundation:foundation:1.5.0")
-
-// --- Lifecycle y ViewModel (para Compose) ---
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-
-// --- Retrofit ---
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-// --- Corrutinas ---
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-// --- Coil (para imágenes) ---
-    implementation("io.coil-kt:coil-compose:2.4.0")
-
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    debugImplementation(libs.androidx.ui.test.manifest)
+    kapt(libs.androidx.room.compiler)
 
 }

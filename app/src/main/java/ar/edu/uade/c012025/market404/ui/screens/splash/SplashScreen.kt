@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         delay(2500) // Espera 2.5 segundos
-        navController.navigate("home") {
+        navController.navigate("login") {
             popUpTo("splash") { inclusive = true } // elimina splash del backstack
         }
     }

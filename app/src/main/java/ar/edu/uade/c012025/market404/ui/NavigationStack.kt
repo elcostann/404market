@@ -29,15 +29,15 @@ fun NavigationStack(
         // 2) Login con Google
         composable(Screens.Login.route) {
             LoginScreen(
-                navController  = navController,
-                onGoogleClick  = onGoogleClick
+                navController = navController,
+                onGoogleClick = onGoogleClick
             )
         }
 
         // 3) Listado principal (Home)
         composable(Screens.Home.route) {
             ProductListScreen(
-                navController  = navController,
+                navController = navController,
             )
         }
 
@@ -50,9 +50,10 @@ fun NavigationStack(
                 ?: 0
 
             ProductDetailScreen(
-                productId     = id,
+                productId = id,
                 navController = navController
             )
         }
+
     }
 }

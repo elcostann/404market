@@ -9,4 +9,12 @@ interface IProductAPI {
 
     @GET("products/{id}")
     suspend fun getProduct(@Path("id") id: Int): Product
+
+    @GET("products/categories")
+    suspend fun getCategories(): List<String>
+
+    @GET("products/category/{category}")
+    suspend fun getProductsByCategory(@Path("category") category: String): List<Product>
+
 }
+

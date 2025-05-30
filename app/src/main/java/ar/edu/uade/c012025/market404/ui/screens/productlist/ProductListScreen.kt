@@ -1,5 +1,6 @@
 package ar.edu.uade.c012025.market404.ui.screens.productlist
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,50 +8,47 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ar.edu.uade.c012025.market404.Data.Product
+import ar.edu.uade.c012025.market404.R
+import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
+import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
-    viewModel: ProductListViewModel = viewModel(),
+    viewModel: ProductListViewModel = viewModel1(),
     navController: NavController
 ) {
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val filteredProducts by viewModel.filteredProducts.collectAsState()
     val products by viewModel.products.collectAsState()
+    var isSearchMode by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        // 🛒 Header
-        TopAppBar(
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.ShoppingCart, contentDescription = null, tint = Primary)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("404 Market", fontWeight = FontWeight.Bold)
-                }
-            },
-            actions = {
-                IconButton(onClick = {}) { Icon(Icons.Default.Search, contentDescription = "Buscar") }
-                IconButton(onClick = {}) { Icon(Icons.Default.ShoppingCart, contentDescription = "Carrito") }
-            }
+    Column {
+        MarketTopBar(
+            title = "404 Market",
+            isSearchMode = isSearchMode,
+            searchQueryValue = searchQuery,
+            onQueryChange = { viewModel.onSearchQueryChanged(it) },
+            onSearchClick = { isSearchMode = !isSearchMode },
+            onFavoriteClick = { /* TODO */ },
+            onCartClick = { navController.navigate("cart") },
+            navController = navController
         )
-
         // 🧡 Producto Random
         Box(
             modifier = Modifier
@@ -63,6 +61,7 @@ fun ProductListScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
+
                 Text("Producto Random", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.Black)
                 Button(onClick = {
                     val randomId = products.randomOrNull()?.id ?: 1
@@ -73,33 +72,27 @@ fun ProductListScreen(
             }
         }
 
-        // 🏷️ Título
-        Text(
-            "Productos Destacados",
-            fontWeight = FontWeight.Bold,
-            fontSize = 22.sp,
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-        )
 
-        // 🧱 Grilla
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            items(products) { product ->
+            items(filteredProducts) { product ->
                 ProductItem(product) {
                     navController.navigate("productDetail/${product.id}")
                 }
             }
         }
-
-        // 🎯 Filtros
-        CategoryButtons()
+        CategoryButtons(viewModel)
     }
+
+
 }
+
+
+
+
 
 @Composable
 fun ProductItem(product: Product, onClick: () -> Unit) {
@@ -107,7 +100,9 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(4.dp)
+        colors = CardDefaults.cardColors(containerColor = Color.White), // Fondo blanco
+        border = BorderStroke(1.dp, Color.Black), // Borde negro finito
+        elevation = CardDefaults.cardElevation(2.dp) // Opcional
     ) {
         Column(
             modifier = Modifier.padding(8.dp),
@@ -137,35 +132,46 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
     }
 }
 
+
+
+
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CategoryButtons() {
+fun CategoryButtons(viewModel: ProductListViewModel) {
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFE5E7EB))
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            CategoryButton("Electronica")
-            CategoryButton("Joyeria")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            CategoryButton("Ropa Hombre")
-            CategoryButton("Ropa Mujer")
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            CategoryButton("Todos", selectedCategory) { viewModel.getAllProducts() }
+            CategoryButton("electronics", selectedCategory) { viewModel.getProductsByCategory("electronics") }
+            CategoryButton("jewelery", selectedCategory) { viewModel.getProductsByCategory("jewelery") }
+            CategoryButton("men's clothing", selectedCategory) { viewModel.getProductsByCategory("men's clothing") }
+            CategoryButton("women's clothing", selectedCategory) { viewModel.getProductsByCategory("women's clothing") }
         }
     }
 }
 
 @Composable
-fun CategoryButton(text: String) {
+fun CategoryButton(text: String, selected: String, onClick: () -> Unit) {
+    val isSelected = text == selected
+    val bgColor = if (isSelected) Color.Black else Primary
+    val textColor = if (isSelected) Color.White else Color.Black
+
     Button(
-        onClick = { /* filtrado futuro */ },
-        colors = ButtonDefaults.buttonColors(containerColor = Primary),
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
+        onClick = onClick,
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = bgColor),
+        modifier = Modifier.height(40.dp)
     ) {
-        Text(text)
+        Text(text, fontSize = 14.sp, color = textColor)
     }
 }

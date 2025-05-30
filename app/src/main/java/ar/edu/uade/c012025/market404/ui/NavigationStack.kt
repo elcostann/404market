@@ -10,11 +10,7 @@ import ar.edu.uade.c012025.market404.ui.screens.productdetail.ProductDetailScree
 import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreen
 import ar.edu.uade.c012025.market404.ui.screens.splash.SplashScreen
 
-/**
- * @param onGoogleClick    callback que disparás desde el LoginScreen
- * @param onLogoutClick    callback (por si querés mostrar un botón de logout en Home)
- * @param navController    valor por defecto para no tener que pasarlo desde MainActivity
- */
+
 @Composable
 fun NavigationStack(
     onGoogleClick: () -> Unit,

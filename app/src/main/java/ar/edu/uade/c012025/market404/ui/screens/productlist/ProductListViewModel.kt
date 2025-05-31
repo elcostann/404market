@@ -4,55 +4,63 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductListViewModel : ViewModel() {
     private val dataSource = ProductApiDataSource()
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
 
-    private val _allProducts = MutableStateFlow<List<Product>>(emptyList())
-    private val _filteredProducts = MutableStateFlow<List<Product>>(emptyList())
-    private val _searchQuery = MutableStateFlow("")
-    private val _selectedCategory = MutableStateFlow("Todos")
-
-    val filteredProducts: StateFlow<List<Product>> = _filteredProducts
-    val searchQuery: StateFlow<String> = _searchQuery
-    val selectedCategory: StateFlow<String> = _selectedCategory
-    val products: StateFlow<List<Product>> = _allProducts
+    private val _uiState = MutableStateFlow(ProductListScreenState())
+    val uiState: StateFlow<ProductListScreenState> = _uiState
 
     init {
         getAllProducts()
     }
 
+
     fun getAllProducts() {
         viewModelScope.launch {
+            _isLoading.value = true
             val products = dataSource.getAllProducts()
-            _allProducts.value = products
-            _selectedCategory.value = "Todos"
-            applyFilters()
+            _uiState.update { it.copy(
+                allProducts = products,
+                selectedCategory = "Todos"
+            ).applyFilters()}
+            _isLoading.value = false
         }
     }
 
     fun getProductsByCategory(category: String) {
         viewModelScope.launch {
+            _isLoading.value = true
             val products = dataSource.getProductsByCategory(category)
-            _allProducts.value = products
-            _selectedCategory.value = category
-            applyFilters()
+            _uiState.update {
+                it.copy(
+                    allProducts = products,
+                    selectedCategory = category
+                ).applyFilters()
+            }
+            _isLoading.value = false
         }
     }
 
     fun onSearchQueryChanged(query: String) {
-        _searchQuery.value = query
-        applyFilters()
+        _uiState.update {
+            it.copy(searchQuery = query).applyFilters()
+        }
     }
 
-    private fun applyFilters() {
-        val query = _searchQuery.value.lowercase()
-        val filtered = _allProducts.value.filter {
-            it.title.lowercase().contains(query)
+    // Extensión para aplicar búsqueda sobre el estado
+    private fun ProductListScreenState.applyFilters(): ProductListScreenState {
+        val queryLower = searchQuery.lowercase()
+        val filtered = allProducts.filter {
+            it.title.lowercase().contains(queryLower)
         }
-        _filteredProducts.value = filtered
+        return this.copy(filteredProducts = filtered)
     }
 }

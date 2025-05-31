@@ -27,6 +27,7 @@ import ar.edu.uade.c012025.market404.ui.theme.Background
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
 import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
+import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreenState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,62 +35,96 @@ fun ProductListScreen(
     viewModel: ProductListViewModel = viewModel1(),
     navController: NavController
 ) {
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val filteredProducts by viewModel.filteredProducts.collectAsState()
-    val products by viewModel.products.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val searchQuery = uiState.searchQuery
+    val filteredProducts = uiState.filteredProducts
+    val products = uiState.allProducts
+    val selectedCategory = uiState.selectedCategory
     var isSearchMode by remember { mutableStateOf(false) }
 
-    Column {
-        MarketTopBar(
-            title = "404 Market",
-            isSearchMode = isSearchMode,
-            searchQueryValue = searchQuery,
-            onQueryChange = { viewModel.onSearchQueryChanged(it) },
-            onSearchClick = { isSearchMode = !isSearchMode },
-            onFavoriteClick = { /* TODO */ },
-            onCartClick = { navController.navigate("cart") },
-            navController = navController
-        )
-        //Producto Random
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Primary)
-                .padding(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+
+
+        Column {
+            MarketTopBar(
+                title = "404 Market",
+                isSearchMode = isSearchMode,
+                searchQueryValue = searchQuery,
+                onQueryChange = { viewModel.onSearchQueryChanged(it) },
+                onSearchClick = { isSearchMode = !isSearchMode },
+                onFavoriteClick = { /* TODO */ },
+                onCartClick = { navController.navigate("cart") },
+                navController = navController
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Primary)
+                    .padding(16.dp)
             ) {
-
-                Text("Producto Random", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = Color.Black)
-                Button(onClick = {
-                    val randomId = products.randomOrNull()?.id ?: 1
-                    navController.navigate("productDetail/$randomId")
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color.Black)) {
-                    Text("Ver", color = Color.White)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.randomproduct),
+                        contentDescription = "random 404 Market",
+                        modifier = Modifier.width(70.dp)
+                    )
+                    Text(
+                        "Producto Random",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.Black
+                    )
+                    Button(
+                        onClick = {
+                            val randomId = products.randomOrNull()?.id ?: 1
+                            navController.navigate("productDetail/$randomId")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                    ) {
+                        Text("Ver", color = Color.White)
+                    }
                 }
             }
-        }
+            if (isLoading) {
 
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            items(filteredProducts) { product ->
-                ProductItem(product) {
-                    navController.navigate("productDetail/${product.id}")
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                items(filteredProducts) { product ->
+                    ProductItem(product) {
+                        navController.navigate("productDetail/${product.id}")
+                    }
                 }
             }
+
+            CategoryButtons(
+                selectedCategory = selectedCategory,
+                onCategorySelected = { category ->
+                    if (category == "Todos") viewModel.getAllProducts()
+                    else viewModel.getProductsByCategory(category)
+                }
+            )
         }
-        CategoryButtons(viewModel)
     }
-
-
 }
+
+
+
 
 
 
@@ -125,7 +160,7 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "$${product.price}",
+                text = "us$${product.price}",
                 color = Primary,
                 fontWeight = FontWeight.Bold
             )
@@ -139,9 +174,10 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CategoryButtons(viewModel: ProductListViewModel) {
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
-
+fun CategoryButtons(
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,7 +185,6 @@ fun CategoryButtons(viewModel: ProductListViewModel) {
             .padding(top = 0.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 🔹 Línea superior delgada
         Divider(
             color = Color.Black.copy(alpha = 0.2f),
             thickness = 1.dp,
@@ -161,14 +196,15 @@ fun CategoryButtons(viewModel: ProductListViewModel) {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            CategoryButton("Todos","Todos" ,selectedCategory) { viewModel.getAllProducts() }
-            CategoryButton("electronica", "electronics",selectedCategory) { viewModel.getProductsByCategory("electronics") }
-            CategoryButton("joyeria", "jewelery",selectedCategory) { viewModel.getProductsByCategory("jewelery") }
-            CategoryButton("ropa de hombre","men's clothing" ,selectedCategory) { viewModel.getProductsByCategory("men's clothing") }
-            CategoryButton("ropa de mujer", "women's clothing",selectedCategory) { viewModel.getProductsByCategory("women's clothing") }
+            CategoryButton("Todos", "Todos", selectedCategory) { onCategorySelected("Todos") }
+            CategoryButton("electronica", "electronics", selectedCategory) { onCategorySelected("electronics") }
+            CategoryButton("joyeria", "jewelery", selectedCategory) { onCategorySelected("jewelery") }
+            CategoryButton("ropa de hombre", "men's clothing", selectedCategory) { onCategorySelected("men's clothing") }
+            CategoryButton("ropa de mujer", "women's clothing", selectedCategory) { onCategorySelected("women's clothing") }
         }
     }
 }
+
 
 @Composable
 fun CategoryButton(text: String,textI: String, selected: String, onClick: () -> Unit) {

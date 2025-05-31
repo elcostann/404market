@@ -24,149 +24,104 @@ import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
 import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListViewModel
 import ar.edu.uade.c012025.market404.ui.theme.Primary
-import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
+import androidx.lifecycle.viewmodel.compose.viewModel as viewModel
 
 @Composable
 fun ProductDetailScreen(
     productId: Int,
-    viewModel: ProductListViewModel = viewModel1(),
-    navController: NavController? = null
+    viewModel: ProductDetailViewModel = viewModel(),
+    navController: NavController
 ) {
-    var product by remember { mutableStateOf<Product?>(null) }
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(productId) {
-        try {
-            product = ProductApiDataSource().getProductById(productId)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        viewModel.loadProduct(productId)
     }
 
-    product?.let { it ->
-        val scrollState = rememberScrollState()
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(16.dp)
+    state.product?.let { product ->
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
         ) {
-            // header
+            MarketTopBar(
+                title = "",
+                isSearchMode = false,
+                searchQueryValue = "",
+                onQueryChange = {},
+                onSearchClick = {},
+                onFavoriteClick = {},
+                onCartClick = { navController.navigate("cart") },
+                navController = navController,
+                showBack = true
+            )
 
-            val searchQuery by viewModel.searchQuery.collectAsState()
-            val filteredProducts by viewModel.filteredProducts.collectAsState()
-            val products by viewModel.products.collectAsState()
-            var isSearchMode by remember { mutableStateOf(false) }
+            Image(
+                painter = rememberAsyncImagePainter(product.image),
+                contentDescription = product.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp),
+                contentScale = ContentScale.Fit
+            )
 
-            Column {
-                if (navController != null) {
-                    MarketTopBar(
-                        title = "404 Market",
-                        isSearchMode = isSearchMode,
-                        searchQueryValue = searchQuery,
-                        onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                        onSearchClick = { isSearchMode = !isSearchMode },
-                        onFavoriteClick = { /* TODO */ },
-                        onCartClick = { navController.navigate("cart") },
-                        navController = navController
-                    )
-                }
-            }
-                Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-                // imagen
-                Image(
-                    painter = rememberAsyncImagePainter(it.image),
-                    contentDescription = it.title,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp),
-                    contentScale = ContentScale.Fit
-                )
+            Text(product.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text("us$${product.price}", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Primary)
 
-                Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
 
-                // titulo y precio
-                Text(it.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = "us$${it.price}",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Primary
-                )
+            RatingSection(product)
 
-                Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
-                // Rating dinámico
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val fullStars = it.rating.rate.roundToInt()
-                    repeat(fullStars) {
-                        Text("★", fontSize = 18.sp, color = Color(0xFFFFC107))
-                    }
-                    // si hay .5 o más, mostramos media estrella
-                    if (it.rating.rate - fullStars >= 0.5) {
-                        Text(
-                            "⯪",
-                            fontSize = 18.sp,
-                            color = Color(0xFFFFC107)
-                        ) // Unicode de media estrella
-                    }
-                    val emptyStars = 5 - fullStars - if (it.rating.rate - fullStars >= 0.5) 1 else 0
-                    repeat(emptyStars) {
-                        Text("☆", fontSize = 18.sp, color = Color(0xFFB0BEC5))
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    Text("(${it.rating.count} reviews)", style = MaterialTheme.typography.bodySmall)
-                }
+            Text(product.description, fontSize = 16.sp, color = Color.DarkGray)
 
-                Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
 
-                // Descripción
-                Text(
-                    text = it.description,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                // botones
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(
+                    onClick = { /* TODO: Agregar al carrito */ },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary)
                 ) {
-                    Button(
-                        onClick = { /* agregar al carrito */ },
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("+  Agregar al Carrito")
-                    }
-                    Button(
-                        onClick = { /* agregar a favorito */ },
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("+  Agregar a Favorito")
-                    }
+                    Text("+ Agregar al Carrito")
                 }
 
-                Spacer(Modifier.height(32.dp))
+                Button(
+                    onClick = { /* TODO: Agregar a favoritos */ },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(containerColor = Primary)
+                ) {
+                    Text("+ Favorito")
+                }
             }
-        } ?: run {
-            // carga
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-
+        }
+    } ?: run {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
     }
+}
+
+@Composable
+private fun RatingSection(product: Product) {
+    val fullStars = product.rating.rate.roundToInt()
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        repeat(fullStars) { Text("★", fontSize = 18.sp, color = Color(0xFFFFC107)) }
+        if (product.rating.rate - fullStars >= 0.5) Text("⯪", fontSize = 18.sp, color = Color(0xFFFFC107))
+        val empty = 5 - fullStars - if (product.rating.rate - fullStars >= 0.5) 1 else 0
+        repeat(empty) { Text("☆", fontSize = 18.sp, color = Color(0xFFB0BEC5)) }
+
+        Spacer(Modifier.width(8.dp))
+        Text("(${product.rating.count} reviews)", style = MaterialTheme.typography.bodySmall)
+    }
+}
+
+
 
 
 

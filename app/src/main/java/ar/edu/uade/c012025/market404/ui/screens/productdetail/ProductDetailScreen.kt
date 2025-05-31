@@ -90,7 +90,7 @@ fun ProductDetailScreen(
                 Text(it.title, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "$${it.price}",
+                    text = "us$${it.price}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Primary

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import ar.edu.uade.c012025.market404.R
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import ar.edu.uade.c012025.market404.ui.theme.Primary
 
 
 @Composable
@@ -33,7 +34,7 @@ fun SplashScreen(navController: NavController) {
                 Brush.verticalGradient(
                     colors = listOf(
                         Color(0xFF0F0F0F), // Negro arriba
-                        Color(0xFFF97316), // Naranja (tu color primario)
+                        Primary, // Naranja (tu color primario)
                         Color.White        // Blanco abajo
                     )
                 )

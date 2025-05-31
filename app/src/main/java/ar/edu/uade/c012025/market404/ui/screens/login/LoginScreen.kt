@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import ar.edu.uade.c012025.market404.R
+import ar.edu.uade.c012025.market404.ui.theme.Primary
 
 @Composable
 fun LoginScreen(
@@ -31,7 +32,7 @@ fun LoginScreen(
                 Brush.verticalGradient(
                     colors = listOf(
                         Color(0xFF0F0F0F), // Negro arriba
-                        Color(0xFFF97316), // Naranja (tu color primario)
+                        Primary, // Naranja
                         Color.White        // Blanco abajo
                     )
                 )

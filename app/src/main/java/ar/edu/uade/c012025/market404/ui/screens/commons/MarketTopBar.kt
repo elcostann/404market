@@ -1,5 +1,6 @@
 package ar.edu.uade.c012025.market404.ui.screens.commons
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,9 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import ar.edu.uade.c012025.market404.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,13 +50,17 @@ fun MarketTopBar(
                     modifier = Modifier.fillMaxWidth()
                 )
             } else {
-                Text(title, fontWeight = FontWeight.Bold)
-            }
-        },
-        navigationIcon = {
-            if (showBack) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
+                IconButton(onClick = {
+                    navController.navigate("productlist") {
+                        popUpTo("productlist") { inclusive = true }
+                    }
+                }) {
+                    Image(
+                        painter = painterResource(id = R.drawable.splash_logo),
+                        contentDescription = "Logo 404 Market",
+
+
+                    )
                 }
             }
         },

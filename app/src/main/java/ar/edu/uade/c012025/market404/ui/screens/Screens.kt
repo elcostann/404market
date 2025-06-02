@@ -9,5 +9,6 @@ sealed class Screens(val route: String) {
         /** Helper para generar la ruta con parámetro */
         fun createRoute(productId: Int) = "productDetail/$productId"
     }
+    object Cart :Screens("cart")
 
 }

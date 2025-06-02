@@ -9,6 +9,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,18 +25,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.R
+import ar.edu.uade.c012025.market404.ui.Screens
+import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
 import ar.edu.uade.c012025.market404.ui.theme.Background
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
 import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
-import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreenState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListScreen(
     viewModel: ProductListViewModel = viewModel1(),
-    navController: NavController
+    navController: NavController,
+    cartViewModel: CartViewModel
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -45,15 +50,18 @@ fun ProductListScreen(
 
 
 
-        Column {
+
+
+    Column {
             MarketTopBar(
                 title = "404 Market",
                 isSearchMode = isSearchMode,
+                iconsearch = true,
                 searchQueryValue = searchQuery,
                 onQueryChange = { viewModel.onSearchQueryChanged(it) },
                 onSearchClick = { isSearchMode = !isSearchMode },
                 onFavoriteClick = { /* TODO */ },
-                onCartClick = { navController.navigate("cart") },
+                onCartClick = { navController.navigate(Screens.Cart.route)},
                 navController = navController
             )
 
@@ -106,13 +114,15 @@ fun ProductListScreen(
                 modifier = Modifier.weight(1f)
             ) {
                 items(filteredProducts) { product ->
-                    ProductItem(product) {
-                        navController.navigate("productDetail/${product.id}")
-                    }
+                    ProductItem(
+                        product = product,
+                        onClick = { navController.navigate("productDetail/${product.id}") },
+                        onAddToCart = { cartViewModel.addToCart(product.id) }
+                    )
                 }
             }
 
-            CategoryButtons(
+                CategoryButtons(
                 selectedCategory = selectedCategory,
                 onCategorySelected = { category ->
                     if (category == "Todos") viewModel.getAllProducts()
@@ -131,7 +141,7 @@ fun ProductListScreen(
 
 
 @Composable
-fun ProductItem(product: Product, onClick: () -> Unit) {
+fun ProductItem(product: Product, onClick: () -> Unit, onAddToCart: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -164,6 +174,15 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                 color = Primary,
                 fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = onAddToCart,
+                colors = ButtonDefaults.buttonColors(containerColor = Primary)
+
+            ) { Text("+")
+            Icon(Icons.Filled.ShoppingCart, contentDescription = "Carrito")
+            }
+
         }
     }
 }

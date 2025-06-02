@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ar.edu.uade.c012025.market404.ui.screens.carrito.CartScreen
+import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
 import ar.edu.uade.c012025.market404.ui.screens.login.LoginScreen
 import ar.edu.uade.c012025.market404.ui.screens.productdetail.ProductDetailScreen
 import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreen
@@ -15,18 +17,17 @@ import ar.edu.uade.c012025.market404.ui.screens.splash.SplashScreen
 fun NavigationStack(
     onGoogleClick: () -> Unit,
     onLogoutClick: () -> Unit,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    cartViewModel: CartViewModel // 💡 Parámetro corregido (con minúscula)
 ) {
     NavHost(
-        navController   = navController,
+        navController = navController,
         startDestination = Screens.Splash.route
     ) {
-        // 1) Pantalla de splash
         composable(Screens.Splash.route) {
             SplashScreen(navController)
         }
 
-        // 2) Login con Google
         composable(Screens.Login.route) {
             LoginScreen(
                 navController = navController,
@@ -34,14 +35,13 @@ fun NavigationStack(
             )
         }
 
-        // 3) Listado principal (Home)
         composable(Screens.Home.route) {
             ProductListScreen(
                 navController = navController,
+                cartViewModel = cartViewModel // 🛒 Pasamos el viewModel
             )
         }
 
-        // 4) Detalle de producto, con parámetro productId
         composable(Screens.ProductDetail.route) { backStackEntry ->
             val id = backStackEntry
                 .arguments
@@ -51,9 +51,16 @@ fun NavigationStack(
 
             ProductDetailScreen(
                 productId = id,
-                navController = navController
+                navController = navController,
+                cartViewModel = cartViewModel // 🛒 Pasamos el viewModel
             )
         }
 
+        composable(Screens.Cart.route) {
+            CartScreen(
+                navController = navController,
+                viewModel = cartViewModel // 🛒 Usamos el mismo viewModel
+            )
+        }
     }
 }

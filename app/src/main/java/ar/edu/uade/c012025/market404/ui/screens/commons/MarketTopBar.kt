@@ -32,13 +32,13 @@ import ar.edu.uade.c012025.market404.R
 fun MarketTopBar(
     title: String,
     isSearchMode: Boolean,
+    iconsearch: Boolean,
     searchQueryValue: String,
     onSearchClick: () -> Unit,
     onQueryChange: (String) -> Unit,
     onFavoriteClick: () -> Unit,
     onCartClick: () -> Unit,
     navController: NavController,
-    showBack: Boolean = false
 ) {
     TopAppBar(
         title = {
@@ -65,9 +65,11 @@ fun MarketTopBar(
             }
         },
         actions = {
+
             IconButton(onClick = onSearchClick) {
+                if (iconsearch){
                 Icon(Icons.Filled.Search, contentDescription = "Buscar")
-            }
+            }}
             IconButton(onClick = onFavoriteClick) {
                 Icon(Icons.Filled.Favorite, contentDescription = "Favoritos")
             }

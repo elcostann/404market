@@ -78,6 +78,8 @@ dependencies{
         exclude(group= "com.intellij", module="annotations")
     }
     implementation(libs.google.firebase.bom)
+    implementation(libs.firebase.dataconnect)
+    implementation(libs.places)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -105,6 +107,7 @@ dependencies{
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation ("com.google.android.material:material:1.10.0")
 
 
 

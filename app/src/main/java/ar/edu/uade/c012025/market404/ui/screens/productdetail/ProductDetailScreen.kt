@@ -17,12 +17,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
 import coil.compose.rememberAsyncImagePainter
 import kotlin.math.roundToInt
 import ar.edu.uade.c012025.market404.Data.Product
+import ar.edu.uade.c012025.market404.ui.Screens
+import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
-import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListViewModel
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import androidx.lifecycle.viewmodel.compose.viewModel as viewModel
 
@@ -30,7 +30,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel as viewModel
 fun ProductDetailScreen(
     productId: Int,
     viewModel: ProductDetailViewModel = viewModel(),
-    navController: NavController
+    navController: NavController,
+    cartViewModel: CartViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -47,13 +48,13 @@ fun ProductDetailScreen(
             MarketTopBar(
                 title = "",
                 isSearchMode = false,
+                iconsearch = false,
                 searchQueryValue = "",
                 onQueryChange = {},
                 onSearchClick = {},
                 onFavoriteClick = {},
-                onCartClick = { navController.navigate("cart") },
+                onCartClick = { navController.navigate(Screens.Cart.route)},
                 navController = navController,
-                showBack = true
             )
 
             Image(
@@ -82,7 +83,7 @@ fun ProductDetailScreen(
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Button(
-                    onClick = { /* TODO: Agregar al carrito */ },
+                    onClick = { cartViewModel.addToCart(productId) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Primary)

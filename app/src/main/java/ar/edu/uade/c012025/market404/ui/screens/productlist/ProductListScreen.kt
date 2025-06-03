@@ -170,7 +170,7 @@ fun ProductItem(product: Product, onClick: () -> Unit, onAddToCart: () -> Unit) 
                 style = MaterialTheme.typography.bodyMedium
             )
             Text(
-                text = "us$${product.price}",
+                text = "Us$${product.price}",
                 color = Primary,
                 fontWeight = FontWeight.Bold
             )

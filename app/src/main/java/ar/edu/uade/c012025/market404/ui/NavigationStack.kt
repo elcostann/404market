@@ -11,6 +11,7 @@ import ar.edu.uade.c012025.market404.ui.screens.login.LoginScreen
 import ar.edu.uade.c012025.market404.ui.screens.productdetail.ProductDetailScreen
 import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreen
 import ar.edu.uade.c012025.market404.ui.screens.splash.SplashScreen
+import ar.edu.uade.c012025.market404.ui.screens.success.SuccessScreen
 
 
 @Composable
@@ -62,5 +63,9 @@ fun NavigationStack(
                 viewModel = cartViewModel // 🛒 Usamos el mismo viewModel
             )
         }
+        composable(Screens.Success.route) {
+            SuccessScreen(navController = navController, cartViewModel = cartViewModel)
+        }
+
     }
 }

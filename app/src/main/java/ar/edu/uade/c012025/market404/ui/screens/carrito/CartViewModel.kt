@@ -1,25 +1,27 @@
 package ar.edu.uade.c012025.market404.ui.screens.carrito
 
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.c012025.market404.Data.CartProduct
+import ar.edu.uade.c012025.market404.Data.CartApiDataSource
 import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.os.Build
+import ar.edu.uade.c012025.market404.Data.CartItemUI
+import ar.edu.uade.c012025.market404.Data.CartRequest
+import ar.edu.uade.c012025.market404.Data.ICartAPI
+import com.google.firebase.auth.FirebaseAuth
+import java.time.LocalDate
 
-data class CartItemUI(
-    val productId: Int,
-    val title: String,
-    val image: String,
-    val price: Double,
-    val quantity: Int
-)
 
 class CartViewModel : ViewModel() {
 
     private val productDataSource = ProductApiDataSource()
+    private val cartDataSource = CartApiDataSource()
 
     private val _cartItems = MutableStateFlow<List<CartProduct>>(emptyList())
     private val _state = MutableStateFlow(CartScreenState())
@@ -38,6 +40,28 @@ class CartViewModel : ViewModel() {
         _cartItems.value = current
         updateState()
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun finalizarCompra() {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid?.hashCode() ?: 0
+            val date = LocalDate.now().toString()
+
+            val cartRequest = CartRequest(
+                userId = userId,
+                date = date,
+                products = _cartItems.value
+            )
+
+            try {
+                cartDataSource.createCart(cartRequest)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
     fun increaseQuantity(productId: Int) {
         val current = _cartItems.value.toMutableList()

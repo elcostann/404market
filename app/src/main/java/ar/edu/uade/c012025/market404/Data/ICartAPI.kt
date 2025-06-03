@@ -1,5 +1,6 @@
 package ar.edu.uade.c012025.market404.Data
 
+import com.google.firebase.dataconnect.LocalDate
 import retrofit2.http.*
 
 
@@ -10,6 +11,8 @@ interface ICartAPI {
 
     @GET("carts/{id}")
     suspend fun getCartById(@Path("id") cartId: Int): CartResponse
+
+
 }
 
 data class CartProduct(
@@ -18,8 +21,8 @@ data class CartProduct(
 )
 
 data class CartRequest(
-    val userId: Int = 1, // podés dejarlo fijo para pruebas
-    val date: String = "2024-06-01",
+    val userId: Int= 1,
+    val date:  String= LocalDate.toString(),
     val products: List<CartProduct>
 )
 

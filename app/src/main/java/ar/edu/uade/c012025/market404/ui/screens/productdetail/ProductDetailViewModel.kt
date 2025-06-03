@@ -12,14 +12,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartScreenState
 import ar.edu.uade.c012025.market404.Data.IProductAPI
+import ar.edu.uade.c012025.market404.Data.ProductRepository
 import com.google.firebase.dataconnect.LocalDate
 
 class ProductDetailViewModel : ViewModel() {
 
 
     private val cartDataSource = CartApiDataSource()
-
-    private val dataSource = ProductApiDataSource()
+    private val repository = ProductRepository()
     private val _cartItems = MutableStateFlow<List<CartProduct>>(emptyList())
     val cartItems: StateFlow<List<CartProduct>> = _cartItems
 
@@ -31,7 +31,7 @@ class ProductDetailViewModel : ViewModel() {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             try {
-                val product = dataSource.getProductById(id)
+                val product = repository.getProductById(id)
                 _state.value = ProductDetailScreenState(product = product)
             } catch (e: Exception) {
                 _state.value = ProductDetailScreenState(error = e.message)

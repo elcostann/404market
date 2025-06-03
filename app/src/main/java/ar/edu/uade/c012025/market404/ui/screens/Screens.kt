@@ -10,5 +10,7 @@ sealed class Screens(val route: String) {
         fun createRoute(productId: Int) = "productDetail/$productId"
     }
     object Cart :Screens("cart")
+    object Success : Screens("success")
+
 
 }

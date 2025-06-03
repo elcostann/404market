@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
+import ar.edu.uade.c012025.market404.Data.ProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProductListViewModel : ViewModel() {
-    private val dataSource = ProductApiDataSource()
+
+    private val repository = ProductRepository()
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -26,7 +28,7 @@ class ProductListViewModel : ViewModel() {
     fun getAllProducts() {
         viewModelScope.launch {
             _isLoading.value = true
-            val products = dataSource.getAllProducts()
+            val products = repository.getAllProducts()
             _uiState.update { it.copy(
                 allProducts = products,
                 selectedCategory = "Todos"
@@ -38,7 +40,7 @@ class ProductListViewModel : ViewModel() {
     fun getProductsByCategory(category: String) {
         viewModelScope.launch {
             _isLoading.value = true
-            val products = dataSource.getProductsByCategory(category)
+            val products = repository.getProductsByCategory(category)
             _uiState.update {
                 it.copy(
                     allProducts = products,

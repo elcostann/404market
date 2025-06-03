@@ -1,5 +1,7 @@
 package ar.edu.uade.c012025.market404.ui.screens.carrito
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import ar.edu.uade.c012025.market404.ui.Screens
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CartScreen(
     viewModel: CartViewModel = viewModel(),
@@ -71,7 +75,7 @@ fun CartScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(text = item.title)
-                            Text(text = "$${item.price}", color = Primary)
+                            Text(text = "us$${item.price}", color = Primary)
                             Row(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -105,7 +109,8 @@ fun CartScreen(
         )
 
         Button(
-            onClick = { /* Finalizar compra */ },
+            onClick = { viewModel.finalizarCompra()
+                        navController.navigate(Screens.Success.route) },
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),

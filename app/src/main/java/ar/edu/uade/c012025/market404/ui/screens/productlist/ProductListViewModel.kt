@@ -2,9 +2,8 @@ package ar.edu.uade.c012025.market404.ui.screens.productlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.edu.uade.c012025.market404.Data.Product
-import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
 import ar.edu.uade.c012025.market404.Data.ProductRepository
+import ar.edu.uade.c012025.market404.domain.IProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -12,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class ProductListViewModel : ViewModel() {
 
-    private val repository = ProductRepository()
+    private val repository: IProductRepository = ProductRepository()
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 

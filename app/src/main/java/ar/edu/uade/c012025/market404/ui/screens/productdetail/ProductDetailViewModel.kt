@@ -5,21 +5,18 @@ import androidx.lifecycle.viewModelScope
 import ar.edu.uade.c012025.market404.Data.CartApiDataSource
 import ar.edu.uade.c012025.market404.Data.CartProduct
 import ar.edu.uade.c012025.market404.Data.CartRequest
-import ar.edu.uade.c012025.market404.Data.Product
-import ar.edu.uade.c012025.market404.Data.ProductApiDataSource
+import ar.edu.uade.c012025.market404.Data.ProductRepository
+import ar.edu.uade.c012025.market404.domain.ICartRepository
+import ar.edu.uade.c012025.market404.domain.IProductRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import ar.edu.uade.c012025.market404.ui.screens.carrito.CartScreenState
-import ar.edu.uade.c012025.market404.Data.IProductAPI
-import ar.edu.uade.c012025.market404.Data.ProductRepository
-import com.google.firebase.dataconnect.LocalDate
 
 class ProductDetailViewModel : ViewModel() {
 
 
-    private val cartDataSource = CartApiDataSource()
-    private val repository = ProductRepository()
+    private val cartDataSource: ICartRepository = CartApiDataSource()
+    private val repository: IProductRepository = ProductRepository()
     private val _cartItems = MutableStateFlow<List<CartProduct>>(emptyList())
     val cartItems: StateFlow<List<CartProduct>> = _cartItems
 

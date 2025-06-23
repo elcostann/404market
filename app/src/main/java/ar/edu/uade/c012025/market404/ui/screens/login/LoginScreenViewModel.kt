@@ -21,15 +21,10 @@ class LoginScreenViewModel : ViewModel() {
         checkAuthStatus()
     }
 
-    /** Si ya hay user en FirebaseAuth, avisamos al UI. */
     private fun checkAuthStatus() {
         if (FirebaseAuth.getInstance().currentUser != null) {
             viewModelScope.launch { _uiEvent.send("loginOK") }
         }
     }
 
-    /** Llamar cuando el sign-in con credenciales termine OK. */
-    fun onLoginSuccess() {
-        viewModelScope.launch { _uiEvent.send("loginOK") }
-    }
 }

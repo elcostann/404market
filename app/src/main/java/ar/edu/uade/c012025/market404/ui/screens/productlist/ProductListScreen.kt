@@ -4,16 +4,41 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +56,7 @@ import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
 import ar.edu.uade.c012025.market404.ui.theme.Background
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,22 +74,28 @@ fun ProductListScreen(
     val selectedCategory = uiState.selectedCategory
     var isSearchMode by remember { mutableStateOf(false) }
 
-
-
-
+    val user = FirebaseAuth.getInstance().currentUser
+    val userName = user?.displayName ?: "Usuario"
 
     Column {
-            MarketTopBar(
-                title = "404 Market",
-                isSearchMode = isSearchMode,
-                iconsearch = true,
-                searchQueryValue = searchQuery,
-                onQueryChange = { viewModel.onSearchQueryChanged(it) },
-                onSearchClick = { isSearchMode = !isSearchMode },
-                onFavoriteClick = { /* TODO */ },
-                onCartClick = { navController.navigate(Screens.Cart.route)},
-                navController = navController
-            )
+        MarketTopBar(
+            title = "404 Market",
+            isSearchMode = isSearchMode,
+            iconsearch = true,
+            searchQueryValue = searchQuery,
+            onQueryChange = { viewModel.onSearchQueryChanged(it) },
+            onSearchClick = { isSearchMode = !isSearchMode },
+            onFavoriteClick = { },
+            onCartClick = { navController.navigate(Screens.Cart.route) },
+            navController = navController,
+            userName = userName,
+            onLogoutClick = {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate(Screens.Login.route) {
+                    popUpTo(0)
+                }
+            }
+        )
 
             Box(
                 modifier = Modifier

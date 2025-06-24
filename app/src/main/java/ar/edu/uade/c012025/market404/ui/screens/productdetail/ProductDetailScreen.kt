@@ -38,6 +38,7 @@ import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.ui.Screens
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
+import ar.edu.uade.c012025.market404.ui.screens.favoritos.FavoriteViewModel
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
 import kotlin.math.roundToInt
@@ -47,7 +48,8 @@ fun ProductDetailScreen(
     productId: Int,
     viewModel: ProductDetailViewModel = viewModel(),
     navController: NavController,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    favoriteViewModel: FavoriteViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -108,7 +110,7 @@ fun ProductDetailScreen(
                 }
 
                 Button(
-                    onClick = { /* Agregar a favoritos */ },
+                    onClick = { favoriteViewModel.toggleFavorite(productId) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Primary)

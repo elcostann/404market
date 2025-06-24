@@ -53,6 +53,7 @@ import ar.edu.uade.c012025.market404.R
 import ar.edu.uade.c012025.market404.ui.Screens
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
+import ar.edu.uade.c012025.market404.ui.screens.favoritos.FavoriteViewModel
 import ar.edu.uade.c012025.market404.ui.theme.Background
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
@@ -64,7 +65,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel as viewModel1
 fun ProductListScreen(
     viewModel: ProductListViewModel = viewModel1(),
     navController: NavController,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    favoriteViewModel: FavoriteViewModel
 ) {
     val isLoading by viewModel.isLoading.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
@@ -85,7 +87,7 @@ fun ProductListScreen(
             searchQueryValue = searchQuery,
             onQueryChange = { viewModel.onSearchQueryChanged(it) },
             onSearchClick = { isSearchMode = !isSearchMode },
-            onFavoriteClick = { },
+            onFavoriteClick =  { navController.navigate(Screens.Favoritos.route) },
             onCartClick = { navController.navigate(Screens.Cart.route) },
             navController = navController,
             userName = userName,

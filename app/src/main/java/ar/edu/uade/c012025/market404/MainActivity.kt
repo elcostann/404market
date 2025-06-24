@@ -21,6 +21,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import ar.edu.uade.c012025.market404.ui.NavigationStack
 import ar.edu.uade.c012025.market404.ui.Screens
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
+import ar.edu.uade.c012025.market404.ui.screens.favoritos.FavoriteViewModel
 import ar.edu.uade.c012025.market404.ui.theme.Market404Theme
 
 class MainActivity : ComponentActivity() {
@@ -52,6 +53,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
         googleSignInClient = GoogleSignIn.getClient(
             this,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -63,6 +65,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             navController = rememberNavController()
             val cartViewModel: CartViewModel = viewModel()
+            val favoriteViewModel: FavoriteViewModel= viewModel()
 
             Market404Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -80,6 +83,7 @@ class MainActivity : ComponentActivity() {
                         },
                         navController = navController,
                         cartViewModel = cartViewModel,
+                        favoriteViewModel = favoriteViewModel,
                     )
                 }
             }

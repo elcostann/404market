@@ -181,15 +181,29 @@ fun ProductDetailScreen(
 
 @Composable
 private fun RatingSection(product: Product) {
-    val fullStars = product.rating.rate.roundToInt()
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        repeat(fullStars) { Text("★", fontSize = 18.sp, color = Color(0xFFFFC107)) }
-        if (product.rating.rate - fullStars >= 0.5) Text("⯪", fontSize = 18.sp, color = Color(0xFFFFC107))
-        val empty = 5 - fullStars - if (product.rating.rate - fullStars >= 0.5) 1 else 0
-        repeat(empty) { Text("☆", fontSize = 18.sp, color = Color(0xFFB0BEC5)) }
+    product.rating?.let { rating ->
+        val fullStars = rating.rate.roundToInt()
 
-        Spacer(Modifier.width(8.dp))
-        Text("(${product.rating.count} reviews)", style = MaterialTheme.typography.bodySmall)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            repeat(fullStars) {
+                Text(text = "★", fontSize = 18.sp, color = Color(0xFFFFC107))
+            }
+
+            if (rating.rate - fullStars >= 0.5) {
+                Text(text = "★", fontSize = 18.sp, color = Color(0xFFFFC107))
+            }
+
+            val empty = 5 - fullStars - if (rating.rate - fullStars >= 0.5) 1 else 0
+            repeat(empty) {
+                Text(text = "☆", fontSize = 18.sp, color = Color(0xFFB0BEC5))
+            }
+
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = "(${rating.count} reviews)",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
 

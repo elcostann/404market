@@ -14,6 +14,10 @@ import ar.edu.uade.c012025.market404.ui.screens.login.LoginScreen
 import ar.edu.uade.c012025.market404.ui.screens.productdetail.ProductDetailScreen
 import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreen
 import ar.edu.uade.c012025.market404.ui.screens.splash.SplashScreen
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.remember
+import ar.edu.uade.c012025.market404.Data.local.ProductDatabaseProvider
+import ar.edu.uade.c012025.market404.ui.screens.productdetail.ProductDetailViewModel
 import ar.edu.uade.c012025.market404.ui.screens.success.SuccessScreen
 
 
@@ -24,11 +28,17 @@ fun NavigationStack(
     navController: NavHostController = rememberNavController(),
     cartViewModel: CartViewModel,
     favoriteViewModel: FavoriteViewModel
-) {
+)
+{   val context = LocalContext.current
+    val productDao = remember { ProductDatabaseProvider.provideDatabase(context).productDao() }
+    val productDetailViewModel = remember { ProductDetailViewModel(productDao = productDao) }
+
     NavHost(
         navController = navController,
         startDestination = Screens.Splash.route
-    ) {
+
+    )
+    {
         composable(Screens.Splash.route) {
             SplashScreen(navController)
         }
@@ -58,7 +68,8 @@ fun NavigationStack(
                 productId = id,
                 navController = navController,
                 cartViewModel = cartViewModel,
-                favoriteViewModel = favoriteViewModel
+                favoriteViewModel = favoriteViewModel,
+                viewModel = productDetailViewModel
             )
         }
 

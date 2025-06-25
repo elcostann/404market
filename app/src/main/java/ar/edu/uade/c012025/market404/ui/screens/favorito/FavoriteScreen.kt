@@ -1,6 +1,7 @@
 package ar.edu.uade.c012025.market404.ui.screens.favorito
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ar.edu.uade.c012025.market404.ui.Screens
@@ -66,6 +68,12 @@ fun FavoriteScreen(
             onCartClick = { navController.navigate(Screens.Cart.route) },
             navController = navController,
         )
+        Text(
+            text = "Mis Favoritos",
+            fontSize = 30.sp,
+            modifier = Modifier.padding(16.dp),
+            color = Color.Black
+        )
 
         when {
             state.isLoading -> {
@@ -86,7 +94,10 @@ fun FavoriteScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .clickable {
+                                    navController.navigate("productDetail/${product.productId}")
+                        },
                             colors = CardDefaults.cardColors(containerColor = Color.White),
                             border = BorderStroke(1.dp, Color.Black)
                         ) {
@@ -128,6 +139,7 @@ fun FavoriteScreen(
                                         shape = RoundedCornerShape(50),
                                         colors = ButtonDefaults.buttonColors(containerColor = Primary)
                                     ) {
+
                                         Text("+")
                                         Icon(Icons.Filled.ShoppingCart, contentDescription = "Carrito")
                                     }

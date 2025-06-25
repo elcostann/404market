@@ -26,6 +26,7 @@ class FavoriteViewModel : ViewModel() {
             try {
                 repository.getFavorites { result ->
                     _state.value = FavoriteScreenState(favorites = result)
+                    _favorites.value = result // <- Actualizás la lista observable también
                 }
             } catch (e: Exception) {
                 _state.value = FavoriteScreenState(error = e.message)
@@ -33,11 +34,6 @@ class FavoriteViewModel : ViewModel() {
         }
     }
 
-    fun aFavorites() {
-        repository.getFavorites { list ->
-            _favorites.value = list
-        }
-    }
 
     fun removeFromFavorites(productId: String) {
         repository.removeFavorite(productId)

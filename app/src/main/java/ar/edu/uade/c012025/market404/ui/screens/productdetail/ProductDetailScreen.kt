@@ -2,6 +2,7 @@
 
 package ar.edu.uade.c012025.market404.ui.screens.productdetail
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,14 +59,22 @@ fun ProductDetailScreen(
     cartViewModel: CartViewModel,
     favoriteViewModel: FavoriteViewModel
 ) {
+
     val state by viewModel.state.collectAsState()
     val fav by favoriteViewModel.favorites.collectAsState()
 
     LaunchedEffect(productId) {
+        favoriteViewModel.loadFavorites()
         viewModel.loadProduct(productId)
     }
 
     state.product?.let { product ->
+        val isFavorite by remember(fav, product.id) {
+            derivedStateOf {
+                fav.any { it.productId == product.id.toString() }
+            }
+        }
+
         Column(modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
@@ -116,13 +127,22 @@ fun ProductDetailScreen(
                     Icon(Icons.Filled.ShoppingCart, contentDescription = "Carrito")
                 }
 
-                val isFavorite = fav.any { it.productId == product.id.toString() }
+
+
+                Log.d("FavTest","isFavorite= $isFavorite")
 
                 Button(
                     onClick = {
+
+
                         if (isFavorite) {
+                            Log.d("FavTest","entro al if")
+
                             favoriteViewModel.removeFromFavorites(product.id.toString())
+
                         } else {
+                            Log.d("FavTest","entro al else")
+
                             favoriteViewModel.addToFavorites(
                                 FavoriteProduct(
                                     productId = product.id.toString(),
@@ -130,7 +150,9 @@ fun ProductDetailScreen(
                                     image = product.image,
                                     price = product.price
                                 )
+
                             )
+
                         }
                     },
                     modifier = Modifier.weight(1f),
@@ -149,6 +171,7 @@ fun ProductDetailScreen(
                 }
             }
         }
+
     } ?: run {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()

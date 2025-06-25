@@ -10,3 +10,10 @@ data class Product(
     val image: String,
     val rating: Rating
 )
+data class FavoriteProduct(
+    val productId: String = "",
+    val title: String = "",
+    val image: String = "",
+    val price: Double = 0.0
+)
+

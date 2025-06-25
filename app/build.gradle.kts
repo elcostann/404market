@@ -80,6 +80,7 @@ dependencies{
     implementation(libs.google.firebase.bom)
     implementation(libs.firebase.dataconnect)
     implementation(libs.places)
+    implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

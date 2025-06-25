@@ -1,6 +1,7 @@
 package ar.edu.uade.c012025.market404.ui.screens.carrito
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,7 +32,6 @@ class CartViewModel : ViewModel() {
     fun addToCart(productId: Int) {
         val current = _cartItems.value.toMutableList()
         val index = current.indexOfFirst { it.productId == productId }
-
         if (index >= 0) {
             current[index] = current[index].copy(quantity = current[index].quantity + 1)
         } else {
@@ -40,6 +40,7 @@ class CartViewModel : ViewModel() {
 
         _cartItems.value = current
         updateState()
+
     }
 
 
@@ -101,8 +102,11 @@ class CartViewModel : ViewModel() {
 
     private fun updateState() {
         viewModelScope.launch {
+
             try {
                 val allProducts = productDataSource.getAllProducts()
+                Log.d("CartDebug", "IDs en carrito: ${_cartItems.value.map { it.productId }}")
+                Log.d("CartDebug", "IDs disponibles en API: ${allProducts.map { it.id }}")
                 val itemsUI = _cartItems.value.mapNotNull { cartItem ->
                     val product = allProducts.find { it.id == cartItem.productId }
                     product?.let {

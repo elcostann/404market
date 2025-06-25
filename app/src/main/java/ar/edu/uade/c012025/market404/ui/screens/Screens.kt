@@ -11,6 +11,7 @@ sealed class Screens(val route: String) {
     }
     object Cart :Screens("cart")
     object Success : Screens("success")
+    object Favorite: Screens("favoritos")
 
 
 }

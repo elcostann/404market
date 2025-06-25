@@ -1,12 +1,15 @@
 package ar.edu.uade.c012025.market404.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartScreen
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
+import ar.edu.uade.c012025.market404.ui.screens.favorito.FavoriteScreen
+import ar.edu.uade.c012025.market404.ui.screens.favorito.FavoriteViewModel
 import ar.edu.uade.c012025.market404.ui.screens.login.LoginScreen
 import ar.edu.uade.c012025.market404.ui.screens.productdetail.ProductDetailScreen
 import ar.edu.uade.c012025.market404.ui.screens.productlist.ProductListScreen
@@ -19,7 +22,8 @@ fun NavigationStack(
     onGoogleClick: () -> Unit,
     onLogoutClick: () -> Unit,
     navController: NavHostController = rememberNavController(),
-    cartViewModel: CartViewModel // 💡 Parámetro corregido (con minúscula)
+    cartViewModel: CartViewModel,
+    favoriteViewModel: FavoriteViewModel
 ) {
     NavHost(
         navController = navController,
@@ -53,7 +57,8 @@ fun NavigationStack(
             ProductDetailScreen(
                 productId = id,
                 navController = navController,
-                cartViewModel = cartViewModel // 🛒 Pasamos el viewModel
+                cartViewModel = cartViewModel,
+                favoriteViewModel = favoriteViewModel
             )
         }
 
@@ -66,6 +71,17 @@ fun NavigationStack(
         composable(Screens.Success.route) {
             SuccessScreen(navController = navController, cartViewModel = cartViewModel)
         }
+        composable("favoritos") {
+            LaunchedEffect(Unit) {
+                favoriteViewModel.loadFavorites()
+            }
+            FavoriteScreen(navController = navController,
+                viewModel= favoriteViewModel,
+                cartViewModel=cartViewModel
+            )
+
+        }
+
 
     }
 }

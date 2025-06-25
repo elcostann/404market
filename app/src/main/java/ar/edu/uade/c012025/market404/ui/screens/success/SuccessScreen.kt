@@ -1,11 +1,8 @@
 package ar.edu.uade.c012025.market404.ui.screens.success
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,7 +43,7 @@ fun SuccessScreen(navController: NavController, cartViewModel: CartViewModel) {
             searchQueryValue = "",
             onQueryChange = {},
             onSearchClick = {},
-            onFavoriteClick = {},
+            onFavoriteClick = {navController.navigate(Screens.Favorite.route)},
             onCartClick = { navController.navigate(Screens.Cart.route) },
             navController = navController,
             iconsearch = false

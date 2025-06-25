@@ -16,9 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,10 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import ar.edu.uade.c012025.market404.Data.FavoriteProduct
 import ar.edu.uade.c012025.market404.Data.Product
 import ar.edu.uade.c012025.market404.ui.Screens
 import ar.edu.uade.c012025.market404.ui.screens.carrito.CartViewModel
 import ar.edu.uade.c012025.market404.ui.screens.commons.MarketTopBar
+import ar.edu.uade.c012025.market404.ui.screens.favorito.FavoriteViewModel
 import ar.edu.uade.c012025.market404.ui.theme.Primary
 import coil.compose.rememberAsyncImagePainter
 import kotlin.math.roundToInt
@@ -47,9 +53,11 @@ fun ProductDetailScreen(
     productId: Int,
     viewModel: ProductDetailViewModel = viewModel(),
     navController: NavController,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    favoriteViewModel: FavoriteViewModel
 ) {
     val state by viewModel.state.collectAsState()
+    val fav by favoriteViewModel.favorites.collectAsState()
 
     LaunchedEffect(productId) {
         viewModel.loadProduct(productId)
@@ -68,7 +76,7 @@ fun ProductDetailScreen(
                 searchQueryValue = "",
                 onQueryChange = {},
                 onSearchClick = {},
-                onFavoriteClick = {},
+                onFavoriteClick = {navController.navigate(Screens.Favorite.route)},
                 onCartClick = { navController.navigate(Screens.Cart.route)},
                 navController = navController,
             )
@@ -104,16 +112,40 @@ fun ProductDetailScreen(
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Primary)
                 ) {
-                    Text("+ Agregar al Carrito")
+                    Text("+")
+                    Icon(Icons.Filled.ShoppingCart, contentDescription = "Carrito")
                 }
 
+                val isFavorite = fav.any { it.productId == product.id.toString() }
+
                 Button(
-                    onClick = { /* Agregar a favoritos */ },
+                    onClick = {
+                        if (isFavorite) {
+                            favoriteViewModel.removeFromFavorites(product.id.toString())
+                        } else {
+                            favoriteViewModel.addToFavorites(
+                                FavoriteProduct(
+                                    productId = product.id.toString(),
+                                    title = product.title,
+                                    image = product.image,
+                                    price = product.price
+                                )
+                            )
+                        }
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(containerColor = Primary)
-                ) {
-                    Text("+ Favorito")
+
+                ) {if (isFavorite){
+                    Text("-")
+                    Icon(Icons.Filled.Favorite, contentDescription = "Favoritos")
+                }
+                    else{
+                    Text("+")
+                    Icon(Icons.Filled.Favorite, contentDescription = "Favoritos")
+                    }
+
                 }
             }
         }

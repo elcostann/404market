@@ -59,7 +59,7 @@ fun CartScreen(
             searchQueryValue = "",
             onQueryChange = {},
             onSearchClick = {},
-            onFavoriteClick = {},
+            onFavoriteClick = {navController.navigate(Screens.Favorite.route)},
             onCartClick = {},
             navController = navController,
         )

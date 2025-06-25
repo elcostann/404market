@@ -85,7 +85,7 @@ fun ProductListScreen(
             searchQueryValue = searchQuery,
             onQueryChange = { viewModel.onSearchQueryChanged(it) },
             onSearchClick = { isSearchMode = !isSearchMode },
-            onFavoriteClick = { },
+            onFavoriteClick = { navController.navigate(Screens.Favorite.route) },
             onCartClick = { navController.navigate(Screens.Cart.route) },
             navController = navController,
             userName = userName,
